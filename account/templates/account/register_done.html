@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}注册成功{% endblock title%}
+{% block content%}
+    <h1>欢迎你！{{new_user.username}}</h1>
+    <p>注册成功，<a href="{% url "login" %}">点击登录</a></p>
+{% endblock content%}

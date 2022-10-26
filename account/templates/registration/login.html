@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title%}登录页面{% endblock title%}
+{% block content %}
+    <h1>登录</h1>
+    {% if form.errors %}
+        <p>用户名与密码不匹配，请重新输入</p>
+    {% else %}
+        <p>请填写登录信息. 还没有账号？ <a href="{% url "register" %}">点击注册</a></p>
+    {% endif%}
+    <div class="login-form">
+        <form action="{% url 'login' %}" method="post">
+            {{ form.as_p}}
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{next}}"/>
+            <p><input type="submit" value="登录"/></p>
+        </form>
+        <p><a href="{% url "password_reset" %}">忘记密码？</a></p>
+    </div>
+    <div class="social">
+        <ul>
+          <li class="facebook">
+            <a href="{% url "social:begin" "facebook" %}">Sign in with Facebook</a>
+          </li>
+          <li class="google">
+            <a href="{% url "social:begin" "google-oauth2" %}">Login with Google</a>
+          </li>
+        </ul>
+      </div>
+{% endblock content%}
