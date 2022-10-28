@@ -22,10 +22,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+    # 账号管理
     path('account/', include('account.urls')),
     
-    path('social-auth/', include('social_django.urls', namespace='social'))
+    path('social-auth/', include('social_django.urls', namespace='social')),
+    # 图片分享
+    path('images/', include('images.urls', namespace='images')),
+    
 ]
 
 # 这样，Django 开发服务器将负责在开发期间（即DEBUG设置为时True）提供媒体文件。

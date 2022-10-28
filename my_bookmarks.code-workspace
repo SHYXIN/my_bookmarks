@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../venv"
+		}
+	],
+	"settings": {
+		"gist.giteeToken": "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"
+	}
+}

@@ -2,5 +2,9 @@
 {% block title %}面板界面{% endblock title %}
 {% block content%}
     <h1>面板</h1>
+    {% with total_images_created=request.user.images_created.count %}
+    <p>欢迎使用面板. 你已经加 mark了 {{ total_images_created }}张图片</p>
+    {% endwith %}
+    <p>将以下按钮拖动到书签工具栏，以便为其他网站的图像添加书签 → <a href="javascript:{% include "bookmarklet_launcher.js" %}" class="button">Bookmark it</a></p>
     <p>欢迎使用面板. 你可以<a href="{% url "edit" %}">编辑账户信息</a> or <a href="{% url "password_change" %}">更改密码</a>.</p>
 {% endblock content%}

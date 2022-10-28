@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}{{image.title}}{% endblock title%}
+{% block content %}
+    <h1>{{image.title}}</h1>
+    {% load thumbnail %}
+    <a href="{{image.image.url}}">
+        <img src="{% thumbnail image.image 300x0 quality=100 %}" class="image-detail">
+    </a>
+    {% with total_likes=image.users_like.count users_like=image.users_like.all %}
+        <div class="image-info">
+            <div>
+                <span class="count">
+                    赞<span class="total">{{total_likes}}</span>
+                </span>
+                <a href="#" data-id="{{ image.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+                    {% if request.user not in users_like %}
+                    赞
+                    {% else %}
+                    取消赞
+                    {% endif %}
+                </a>
+            </div>
+            {{image.description|linebreaks}}
+        </div>
+
+        <div class="image-likes">
+            {% for user in users_like %}
+                <div>
+                    <img src="{{user.profile.photo.url}}">
+                    <p>{{ user.username }}</p>
+                </div>
+            {% empty %}
+                还没有人赞过
+            {% endfor%}
+        </div>
+    {% endwith %}
+{% endblock content%}
+
+{% block domready %}
+$('a.like').click(function(e){
+    e.preventDefault();
+    $.post('{% url "images:like" %}',
+      {
+        id: $(this).data('id'),
+        action: $(this).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $('a.like').data('action');
+
+          // 切换动作
+          $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
+          // 切换链接的文本
+          $('a.like').text(previous_action == 'like' ? '取消赞': '赞');
+
+          // 更新赞数
+          var previous_likes = parseInt($('span.count .total').text());
+          $('span.count .total').text(previous_action == 'like' ?
+          previous_likes + 1 : previous_likes - 1);
+        }
+      }
+    );
+  });
+{% endblock domready%}

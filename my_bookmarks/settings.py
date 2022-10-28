@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'social_django',
     # HTTPS相关
     'django_extensions',
+    'images.apps.ImagesConfig',
+    # 缩略图
+    'easy_thumbnails',
     
 ]
 
@@ -167,3 +170,6 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 # 谷歌
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '372385369613-d3d2jbje1t55e0k4n39ahj1d99qb2dti.apps.googleusercontent.com' # Google Consumer Key
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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' # Google Consumer Secret
+
+# 缩略图degug开关
+THUMBNAIL_DEBUG = True
