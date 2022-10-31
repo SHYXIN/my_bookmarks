@@ -9,4 +9,6 @@ urlpatterns = [
     path('like/', views.image_like, name='like'), # 点赞功能
     
     path('', views.image_list, name='list'),
+    # 排名
+    path('ranking/', views.image_ranking, name='ranking'),
 ]

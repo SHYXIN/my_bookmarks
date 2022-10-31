@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     # 缩略图
     'easy_thumbnails',
     
+    # 动态流
+    'actions.apps.ActionsConfig',
+    
 ]
 
 MIDDLEWARE = [
@@ -173,3 +176,14 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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' # Googl
 
 # 缩略图degug开关
 THUMBNAIL_DEBUG = True
+
+# 给每个user添加url，以为User是django内部的，所以选择动态
+from django.urls import reverse_lazy
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: reverse_lazy('user_detail', args=[u.username])
+}
+
+# redis设置
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
+REDIS_DB = 0

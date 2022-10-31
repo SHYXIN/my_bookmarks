@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% block title %}{{ user.username }}{% endblock title%}
+
+{% block content %}
+    <h1>{{user.username}}</h1>
+    <div class="profile-info">
+        <img src="{% thumbnail user.profile.photo 180x180 %}" class="user-detail">
+    </div>
+    {% with total_followers=user.followers.count %}
+    <span class="count">
+        粉丝数：<span class="total">{{ total_followers }}</span>
+    </span>
+    <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" class="follow button">
+        {% if request.user not in user.followers.all %}
+            关注
+        {% else %}
+            取消关注
+        {% endif%}
+    </a>
+    <div id="image-list" class="image-container">
+        {% include "images/image/list_ajax.html" with images=user.images_created.all %}
+    </div>
+    {% endwith%}
+{% endblock content%}
+
+{% block domready %}
+    $('a.follow').click(function(e){
+        e.preventDefault();
+        $.post(
+            '{% url "user_follow" %}',
+            {
+                id: $(this).data('id'),
+                action: $(this).data('action')
+            },
+            function(data){
+                // data为成功后返回的数据
+                var previous_action = $('a.follow').data('action');
+                
+                // 更改动作
+                $('a.follow').data('action', 
+                previous_action=='follow'? 'unfollow': 'follow');
+                // 更改文本
+                $('a.follow').text(
+                    previous_action=='follow'? '取消关注': '关注');
+                
+                var previous_followers = parseInt(
+                    $('span.count .total').text());
+                $('span.count .total').text(
+                    previous_action=='follow'? previous_followers + 1: previous_followers - 1);
+            }
+        
+        );
+    });
+{% endblock domready %}

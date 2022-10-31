@@ -18,7 +18,7 @@
                     <a href="{% url "images:list" %}">图片</a>
                 </li>
                 <li {% if section == "people"%} class="selected" {% endif %}>
-                    <a href="#">人们</a>
+                    <a href="{% url "user_list" %}">用户列表</a>
                 </li>
             </ul>
         {% endif %}

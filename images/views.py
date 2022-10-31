@@ -11,6 +11,13 @@ from django.views.decorators.http import require_POST
 
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from actions.utils import create_action
+import redis
+from django.conf import settings
+# redis设置
+r = redis.Redis(host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.REDIS_DB)
 
 # Create your views here.
 @login_required
@@ -23,6 +30,9 @@ def image_create(request):
             new_item = form.save(commit=False)
             new_item.user = request.user
             new_item.save()
+            # 创建动作
+            create_action(request.user, '书签了图像', new_item)
+            
             messages.success(request, '图片添加成功')
 
             return redirect(new_item.get_absolute_url())
@@ -36,10 +46,34 @@ def image_create(request):
 
 def image_detail(request, id, slug):
     image = get_object_or_404(Image, id=id, slug=slug)
+    # 用redis实现浏览量
+    # increment total image views by 1
+    total_views = r.incr(f'image:{image.id}:views')
+    # increment image ranking by 1
+    # 创建或自增
+    r.zincrby('image_ranking', 1, image.id)
 
     return render(request, 'images/image/detail.html', {'section': 'images',
                                                         'image':image,
+                                                        'total_views':total_views,
                                                         })
+    
+@login_required
+def image_ranking(request):
+    # 获取图像排名字典
+    image_ranking = r.zrange('image_ranking', 0, -1, desc=True)[:10]
+    # print(image_ranking)
+    image_ranking_ids = [int(i) for i in image_ranking]
+
+    # 获取查看次数最多的图像
+    most_viewed = list(Image.objects.filter(id__in=image_ranking_ids))
+
+    most_viewed.sort(key=lambda x:image_ranking_ids.index(x.id))
+
+    return render(request, 'images/image/ranking.html', {'section': 'images',
+                                                         'most_viewed':most_viewed,
+                                                         })
+
 @ajax_required
 @login_required
 @require_POST
@@ -52,6 +86,7 @@ def image_like(request):
             image = Image.objects.get(id=image_id)
             if action == 'like':
                 image.users_like.add(request.user)
+                create_action(request.user, '点赞了', image)
             else:
                 image.users_like.remove(request.user)
             return JsonResponse({'status': 'ok'})

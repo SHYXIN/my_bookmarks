@@ -6,6 +6,8 @@ def ajax_required(f):
         if not request.is_ajax():
             # 不是ajax请求，返回错误
             return HttpResponseBadRequest()
+        # 是ajax请求则返回本身
+        return f(request, *args, **kwargs)
     # 回复原有函数的内容
     wrap.__doc__=f.__doc__
     wrap.__name__=wrap.__name__

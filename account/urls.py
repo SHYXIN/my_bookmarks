@@ -26,5 +26,13 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     
     # 用户编辑信息
-    path('edit/', views.edit, name='edit')    
+    path('edit/', views.edit, name='edit'),
+    
+    # 用户列表
+    path('users/', views.user_list, name='user_list'),
+    # 处理用户关注 必须在detail之前
+    path('users/follow/', views.user_follow, name='user_follow'),
+    # 用户详情页
+    path('users/<username>/', views.user_detail, name='user_detail'),
+
 ]
